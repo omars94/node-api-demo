@@ -8,10 +8,11 @@ const {
   updateProduct,
   deleteProduct,
 } = require("../functions");
+const ProductModel = require("../ProductModel");
 
 // GET all products
-router.get("/", (req, res) => {
-  res.json(products);
+router.get("/", async (req, res) => {
+  res.json(await ProductModel.find());
 });
 // GET product by ID
 router.get("/:id", getProduct);

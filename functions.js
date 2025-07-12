@@ -1,6 +1,7 @@
 const products = require("./products.json");
-
-export const getProduct = (req, res) => {
+const Product = require("./ProductModel");
+const ProductModel = require("./ProductModel");
+const getProduct = (req, res) => {
   const product = products.find((p) => p.id == req.params.id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
@@ -8,8 +9,13 @@ export const getProduct = (req, res) => {
   res.json(product);
 };
 
-export const addProduct = (req, res) => {
+const addProduct = async (req, res) => {
+  //mongodb
+  const product = new Product(req.body);
+  res.status(201).json(await product.save());
+  return;
   const { title, price, description } = req.body;
+
   products.forEach((i) => JSON.stringify(i) == JSON.stringify(req.body));
   // Basic validation
   if (!title || title.trim() === "") {
@@ -29,7 +35,14 @@ export const addProduct = (req, res) => {
   products.push(newProduct);
   res.status(201).json(newProduct);
 };
-export const updateProduct = (req, res) => {
+const updateProduct = async (req, res) => {
+  const updated = await ProductModel.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res.json(updated);
+  return;
   const product = products.find((p) => p.id == req.params.id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
@@ -41,7 +54,10 @@ export const updateProduct = (req, res) => {
 
   res.json(product);
 };
-export const deleteProduct = (req, res) => {
+const deleteProduct = async (req, res) => {
+  await Product.findByIdAndDelete(req.params.id);
+  res.json({ message: "Deleted" });
+  return;
   const initialLength = products.length;
   products = products.filter((p) => p.id != req.params.id);
 
@@ -51,3 +67,4 @@ export const deleteProduct = (req, res) => {
 
   res.status(204).send();
 };
+module.exports = { deleteProduct, getProduct, addProduct, updateProduct };
