@@ -1,13 +1,24 @@
-const products = require("./products.json");
 const Product = require("./ProductModel");
 const ProductModel = require("./ProductModel");
-const getProduct = (req, res) => {
-  const product = products.find((p) => p.id == req.params.id);
+
+const getProduct = async (req, res) => {
+  const product = await ProductModel.findById(req.params.id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
   }
   res.json(product);
 };
+
+function auth(req, res, next) {
+  const token = req.headers.authorization?.split(" ")[1];
+  try {
+    const decoded = jwt.verify(token, "SECRET");
+    req.user = decoded;
+    next();
+  } catch {
+    res.status(401).json({ error: "Unauthorized" });
+  }
+}
 
 const addProduct = async (req, res) => {
   //mongodb
@@ -67,4 +78,4 @@ const deleteProduct = async (req, res) => {
 
   res.status(204).send();
 };
-module.exports = { deleteProduct, getProduct, addProduct, updateProduct };
+module.exports = { deleteProduct, getProduct, addProduct, updateProduct, auth };
