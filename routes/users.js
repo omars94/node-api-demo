@@ -1,9 +1,10 @@
 const express = require("express");
 const User = require("../UserModel");
+const { auth } = require("../functions");
 const router = express.Router();
 
 // Create
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   try {
     const newUser = new User(req.body);
     const saved = await newUser.save();
@@ -15,13 +16,13 @@ router.post("/", async (req, res) => {
 });
 
 // Read all
-router.get("/", async (req, res) => {
+router.get("/", auth, async (req, res) => {
   const users = await User.find();
   res.json(users);
 });
 
 // Update
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
   const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   });
@@ -29,7 +30,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   await User.findByIdAndDelete(req.params.id);
   res.json({ message: "User deleted" });
 });

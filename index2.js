@@ -30,6 +30,7 @@ app.post("/register", async (req, res) => {
   const { email, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
   const user = await new UserModel({ email, password: hashed }).save();
+  console.log(hashed, user);
   res.json(user);
 });
 

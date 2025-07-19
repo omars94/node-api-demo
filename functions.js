@@ -1,5 +1,7 @@
 const Product = require("./ProductModel");
 const ProductModel = require("./ProductModel");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const getProduct = async (req, res) => {
   const product = await ProductModel.findById(req.params.id);
@@ -12,7 +14,7 @@ const getProduct = async (req, res) => {
 function auth(req, res, next) {
   const token = req.headers.authorization?.split(" ")[1];
   try {
-    const decoded = jwt.verify(token, "SECRET");
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
     req.user = decoded;
     next();
   } catch {
